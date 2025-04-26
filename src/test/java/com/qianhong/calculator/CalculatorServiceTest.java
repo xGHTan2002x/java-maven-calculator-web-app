@@ -42,7 +42,8 @@ public class CalculatorServiceTest {
     @Test
     public void testAddWithZero() {
         assertEquals(8L, (long)(new CalculatorService()).add(8, 0).getResult());
-
+    }
+    
     @Test
     public void testPow() {
         assertEquals(8, new CalculatorService().Pow(2, 3).getResult());
