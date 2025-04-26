@@ -1,10 +1,9 @@
 package com.qianhong.calculator;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
-
-import static org.hamcrest.CoreMatchers.*;
 
 public class CalculatorServiceTest {
 
@@ -38,10 +37,15 @@ public class CalculatorServiceTest {
     public void testDivByZero() {
         (new CalculatorService()).div(12, 0).getResult();
     }
-
+  
     //Test the result by add a number with zero
     @Test
     public void testAddWithZero() {
         assertEquals(8L, (long)(new CalculatorService()).add(8, 0).getResult());
+
+    @Test
+    public void testPow() {
+        assertEquals(8, new CalculatorService().Pow(2, 3).getResult());
+
     }
 }
