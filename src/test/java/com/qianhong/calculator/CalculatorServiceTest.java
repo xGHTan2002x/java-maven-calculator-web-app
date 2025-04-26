@@ -35,13 +35,13 @@ public class CalculatorServiceTest {
     //Test the calculator that errors when any number divided by zero
     @Test(expected = ArithmeticException.class)  // <- Updated exception type
     public void testDivByZero() {
-        (new CalculatorService()).div(12, 0).getResult();
+        (new CalculatorService()).Div(12, 0).getResult();
     }
   
     //Test the result by add a number with zero
     @Test
     public void testAddWithZero() {
-        assertEquals(8L, (long)(new CalculatorService()).add(8, 0).getResult());
+        assertEquals(8L, (long)(new CalculatorService()).Add(8, 0).getResult());
     }
     
     @Test
