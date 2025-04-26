@@ -1,0 +1,39 @@
+name: Build Java Maven Calculator Web App
+
+on:
+  push:
+    branches: [master]
+  pull_request: 
+    branches: [master]
+
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Pulls repo code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 8
+        uses: actions/setup-java@v3
+        with:
+          java-version: "8"
+          distribution: 'temurin'
+
+      - name: Build with Maven
+        run: mvn clean package -Dmaven.test.skip=true | tee build-report.txt
+
+      - name: Upload Build Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-report
+          path: build-report.txt
+      
+      - name: Upload WAR file for docker deployment
+        uses: actions/upload-artifact@v4
+        with:
+          name: calculator-war
+          path: target/calculator.war
+        
