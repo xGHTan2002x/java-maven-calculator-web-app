@@ -1,44 +1,87 @@
-node {
-   def mvnHome = tool 'M3'
+pipeline {
+   agent any
 
-   stage('Checkout Code') { 
-      git 'https://github.com/maping/java-maven-calculator-web-app.git'
+   environment {
+      MVN_HOME = tool name: 'M3', type: 'maven'
    }
-   stage('JUnit Test') {
-      if (isUnix()) {
-         sh "'${mvnHome}/bin/mvn' clean test"
-      } else {
-         bat(/"${mvnHome}\bin\mvn" clean test/)
+
+   stages {
+      stage('Clean Workspace') {
+         steps {
+            deleteDir()
+         }
       }
-   }
-   stage('Integration Test') {
-      if (isUnix()) {
-         sh "'${mvnHome}/bin/mvn' integration-test"
-      } else {
-         bat(/"${mvnHome}\bin\mvn" integration-test/)
+
+      stage('Initialize') {
+         steps {
+            cleanWs()
+         }
       }
-   }
- /*
-   stage('Performance Test') {
-      if (isUnix()) {
-         sh "'${mvnHome}/bin/mvn' cargo:start verify cargo:stop"
-      } else {
-         bat(/"${mvnHome}\bin\mvn" cargo:start verify cargo:stop/)
+
+      stage('Checkout Code') {
+         steps {
+            git credentialsId: 'my-github-creds',
+               url: 'https://github.com/yaowenkhor/java-maven-calculator-web-app.git',
+               branch: 'master'
+         }
       }
-   }
-  */
-  stage('Performance Test') {
-      if (isUnix()) {
-         sh "'${mvnHome}/bin/mvn' verify"
-      } else {
-         bat(/"${mvnHome}\bin\mvn" verify/)
+
+      stage('Build') {
+         steps {
+            script {
+               if (isUnix()) {
+                  sh "'${MVN_HOME}/bin/mvn' clean package -Dmaven.javadoc.skip=true"
+               } else {
+                  bat(/"${MVN_HOME}\bin\mvn" clean package -Dmaven.javadoc.skip=true/)
+               }
+            }
+         }
       }
-   }
-   stage('Deploy') {
-      timeout(time: 10, unit: 'MINUTES') {
-           input message: 'Deploy this web app to production ?'
+
+      stage('JUnit Test') {
+         steps {
+            script {
+               if (isUnix()) {
+                  sh "'${MVN_HOME}/bin/mvn' test"
+               } else {
+                  bat(/"${MVN_HOME}\bin\mvn" test/)
+               }
+            }
+         }
       }
-      echo 'Deploy...'
+
+      stage('Integration Test') {
+         steps {
+            script {
+               if (isUnix()) {
+                  sh "'${MVN_HOME}/bin/mvn' integration-test -Dmaven.javadoc.skip=true"
+               } else {
+                  bat(/"${MVN_HOME}\bin\mvn" integration-test -Dmaven.javadoc.skip=true/)
+               }
+            }
+         }
+      }
+
+      stage('Performance Test') {
+         steps {
+            script {
+               if (isUnix()) {
+                  sh "'${MVN_HOME}/bin/mvn' verify -Dmaven.javadoc.skip=true"
+               } else {
+                  bat(/"${MVN_HOME}\bin\mvn" verify -Dmaven.javadoc.skip=true/)
+               }
+            }
+         }
+      }
+
+      stage('Deploy') {
+         steps {
+            timeout(time: 10, unit: 'MINUTES') {
+               input message: 'Deploy this web app to production?'
+            }
+            echo 'Deploying application...'
+         }
+      }
+
    }
 }
-   
