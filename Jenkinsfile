@@ -83,16 +83,5 @@ pipeline {
          }
       }
 
-      stage('Clean Up') {
-         steps {
-            script {
-               if (isUnix()) {
-                  sh 'docker system prune -f'
-            } else {
-                  bat 'docker system prune -f'
-               }
-            }
-         }
-      }
    }
 }
